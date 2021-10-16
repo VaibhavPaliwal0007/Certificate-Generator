@@ -1,5 +1,6 @@
 const express = require('express')
 const home = require('./routes/home')
+require('./Database/db')
 
 const app = express()
 const port = 8000
