@@ -23,7 +23,7 @@ const fileFilter = (req, file, cb) => {
         return cb(new Error('Please upload an image'), false)
     }
 
-    if(file.size() == 0){
+    if(file.size == 0){
         return cb(new Error('Please upload valid image'))
     }
 
@@ -40,6 +40,8 @@ const upload = multer({
 router.post('/v1/png', upload.single('certificate'), async(req, res) => {
        const buffer = await sharp(req.file.buffer).png().toBuffer()
          
+       console.log(req.file)
+
        res.set('Content-Type', 'image/png')
        res.status(200).send(buffer)
 
