@@ -1,22 +1,22 @@
 const express = require('express')
-const sharp = require('sharp')
 const multer = require('multer')
 
 const router = new express.Router()
+
+const path = './upload/'
 
 router.get('/v1', (req, res) => {
     res.send("Hello World")
 })
 
-// const storage = multer.diskStorage({
-//     destination: function(req, file, cb){
-//         cb(null, '../uploads')
-//     },
-
-//     filename: function(req, file, cb) {
-//         cb(null, file.originalname)
-//     },
-// })
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, path);
+     },
+    filename: function (req, file, cb) {
+        cb(null , 'image.png');
+    }
+});
 
 const fileFilter = (req, file, cb) => {
     if(!file.originalname.match(/\.(jpg|jpeg|png|webp)$/)){
@@ -35,18 +35,17 @@ const upload = multer({
     fileSize: 1024 * 1024 * 10
     },
     fileFilter,
+    storage: storage
  })
 
 router.post('/v1/png', upload.single('certificate'), async(req, res) => {
-       const buffer = await sharp(req.file.buffer).png().toBuffer()
-         
-       console.log(req.file)
+    try{  
+       res.status(200).send("Okay!! Samriddh")
+    }
 
-       res.set('Content-Type', 'image/png')
-       res.status(200).send(buffer)
-
-}, (error, req, res, next) => {
-    res.status(400).send({ error })
+    catch(e){
+        res.status(400).send(e)
+    }
 })
 
 // router.get('/v1/getpng', async(req, res) => {
@@ -67,4 +66,4 @@ router.post('/v1/png', upload.single('certificate'), async(req, res) => {
 //    }
 // })
 
-module.exports = router
+module.exports =  router

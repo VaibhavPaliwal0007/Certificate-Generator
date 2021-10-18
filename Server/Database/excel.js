@@ -1,7 +1,7 @@
 const excel = require('read-excel-file/node')
 
 
-const parentFunc = async() =>{
+const parentFunc = async(file) =>{
         let arr= [];
 
         const func= async() => {
@@ -16,10 +16,12 @@ const parentFunc = async() =>{
             catch(e){
                 console.log(e)
             }
-        } 
+        }
+
         await func()
 
-       console.log(arr)
+        console.log(arr)
 }
 
-parentFunc()
+const arr = parentFunc()
+

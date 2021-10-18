@@ -1,34 +1,37 @@
-const express = require('express')
 const PDFDocument = require('pdfkit')
-const moment = require('moment')
+const fs = require('fs')
+const getStream = require('get-stream')
 
-const router = new express.Router()
+const getCertificate = async (img, name, res) =>{
+        try{
+            const doc = new PDFDocument({
+                layout: "landscape",
+                size: "A4",
+            })
 
+            // doc.pipe(fs.createWriteStream(`${__dirname}/../upload/${name}.pdf`));
+            doc.pipe(res)
 
-router.post("/", (req, res) => {
+            doc.image(img, 0, 0, { width: 900 })
+            console.log(process.cwd())
 
-    const doc = new PDFDocument({
-        layout: "landscape",
-        size: "A4",
-    });
+            doc.font(process.cwd() + '/fonts/DancingScript-VariableFont_wght.ttf')
 
-    const name = req.body.name;
+            doc.fontSize(40)
+               .fillColor('white')
+               .text(name, 100, 295, {
+                align: "center"
+            })
 
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename=${name}.pdf`);
-    doc.pipe(res);
+            doc.end()
 
-    doc.image("images/certificate.png", 0, 0, { width: 900});
+            const pdfStream = await getStream.buffer(doc);
+            return pdfStream;
+        }
 
-    doc.font("fonts/DancingScript-VariableFont_wght.ttf");
+        catch(e){
+            console.log(e);
+        }
+}
 
-    doc.fontSize(60).text(name, 20, 265, {
-        align: "center"
-    });
-
-    doc.fontSize(17).text(moment().format("MMMM Do YYYY"), -275, 430, {
-        align: "center"
-    });
-
-    doc.end();
-})
+module.exports = getCertificate
