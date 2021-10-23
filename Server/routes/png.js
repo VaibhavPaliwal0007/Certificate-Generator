@@ -3,7 +3,7 @@ const multer = require('multer')
 
 const router = new express.Router()
 
-const path = './upload/'
+const path = '/upload/'
 
 router.get('/v1', (req, res) => {
     res.send("Hello World")
@@ -11,7 +11,7 @@ router.get('/v1', (req, res) => {
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
-        cb(null, path);
+        cb(null, process.cwd() + path);
      },
     filename: function (req, file, cb) {
         cb(null , 'image.png');

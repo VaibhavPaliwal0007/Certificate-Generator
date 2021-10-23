@@ -1,8 +1,8 @@
 const express = require('express')
 const multer = require('multer')
 const XLSX = require('xlsx')
-const getCertificate = require('./script')
-const sharp = require('sharp')
+const generateZipforCertificate = require('../functions/generateZip')
+
 const router = new express.Router()
 
 const fileFilter = (req, file, cb) => {
@@ -13,9 +13,6 @@ const fileFilter = (req, file, cb) => {
     cb(undefined, true)
 }
 
-const img = process.cwd() + `/upload/image.png`
-// const img = sharp(name).png().toBuffer()
-
 const upload = multer({ 
     limits: {
     fileSize: 1024 * 1024 * 12
@@ -25,36 +22,24 @@ const upload = multer({
 
 router.post('/v1/xlsx', upload.single('file'), async(req, res) => {
     
-    var file = XLSX.read(req.file.buffer, { type:'buffer', bookType: "xlsx" })
-    let pdfStream
+    try{    
+        var file = XLSX.read(req.file.buffer, { type:'buffer', bookType: "xlsx" })
+        let bufferStream
 
-    res.setHeader("Content-Type", "application/pdf")
-    res.setHeader("Content-Disposition", `attachment; filename=${img}.pdf`)
+        await generateZipforCertificate(file, bufferStream)
 
-    for(let idx = 0; idx < 1; idx++){
-        for(obj in file.Strings[idx]){
-           if(obj == "h" && file.Strings[idx][obj] != (undefined || "")) 
-             pdfStream = await getCertificate(img, file.Strings[idx][obj], res)
-        }
+        res.set({
+            'Content-Type': 'application/zip',
+            'Content-Disposition': 'attachment; filename="test.zip"'
+          })
+         .status(200)
+         .download(`${process.cwd()}/upload/test.zip`)
     }
 
-    
-    res.setHeader("Content-Length", Buffer.byteLength(pdfStream))
-    // res.status(200)
-    // .writeHead(200, {
-    //   'Content-Length': Buffer.byteLength(pdfStream),
-    //   'Content-Type': 'application/pdf',
-    //   'Content-disposition': 'attachment;filename=test.pdf',
-    // })
-    res.end(pdfStream);
-
-    // res.status(200).send()
-
-}, (error, req, res, next) => {
-    res.status(400).send({ error })
+    catch(e){
+        res.status(400).send(e)
+        console.log(e)
+    }
 })
 
-
 module.exports = router
-
-// const data = new UIN

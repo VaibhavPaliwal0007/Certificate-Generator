@@ -1,19 +1,18 @@
 const PDFDocument = require('pdfkit')
-const fs = require('fs')
 const getStream = require('get-stream')
+const generateZipforCertificate = require('./generateZip')
+const fs = require('fs')
 
-const getCertificate = async (img, name, res) =>{
+const img = process.cwd() + '/upload/image.png'
+
+const getCertificate = async (name) =>{
         try{
             const doc = new PDFDocument({
                 layout: "landscape",
                 size: "A4",
             })
 
-            // doc.pipe(fs.createWriteStream(`${__dirname}/../upload/${name}.pdf`));
-            doc.pipe(res)
-
             doc.image(img, 0, 0, { width: 900 })
-            console.log(process.cwd())
 
             doc.font(process.cwd() + '/fonts/DancingScript-VariableFont_wght.ttf')
 
@@ -26,7 +25,8 @@ const getCertificate = async (img, name, res) =>{
             doc.end()
 
             const pdfStream = await getStream.buffer(doc);
-            return pdfStream;
+
+            return pdfStream
         }
 
         catch(e){
