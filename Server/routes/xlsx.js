@@ -26,14 +26,20 @@ router.post('/v1/xlsx', upload.single('file'), async(req, res) => {
         var file = XLSX.read(req.file.buffer, { type:'buffer', bookType: "xlsx" })
         let bufferStream
 
-        await generateZipforCertificate(file, bufferStream)
+        let zip = await generateZipforCertificate(file, bufferStream)
 
-        res.set({
-            'Content-Type': 'application/zip',
-            'Content-Disposition': 'attachment; filename="test.zip"'
-          })
-         .status(200)
-         .download(`${process.cwd()}/upload/test.zip`)
+        res.writeHead(200, {
+            "Content-Type": "application/zip",
+            "Content-disposition": `attachment; filename=test.zip`,
+          });
+        res.end(zip);
+
+        // res.set({
+        //     'Content-Type': 'application/zip',
+        //     'Content-Disposition': 'attachment; filename="test.zip"'
+        //   })
+        //  .status(200)
+        //  .download(`${process.cwd()}/upload/test.zip`)
     }
 
     catch(e){

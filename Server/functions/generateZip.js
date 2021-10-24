@@ -1,6 +1,6 @@
 const JSzip = require('jszip')
 const fs = require('fs')
-const getCertificate = require('./script')
+const getCertificate = require('./getCetificate')
 
 const generateZipforCertificate = async(file, bufferStream) =>{
       
@@ -20,16 +20,20 @@ const generateZipforCertificate = async(file, bufferStream) =>{
             }
         }
 
-        let buffer = await zip.generateAsync({ type: "nodebuffer", compression: 'DEFLATE' })
+        let buffer = await zip.generateAsync({ type: "base64", compression: 'DEFLATE' })
 
-        fs.writeFile('./upload/test.zip', buffer, (error) => {
-            if(error){
-                console.log(error)
-            }
-            else{
-                console.log('File written successfully');
-            }
-        })
+        let Zip = Buffer.from(buffer, "base64")
+
+        return Zip
+
+        // fs.writeFile('./upload/test.zip', buffer, (error) => {
+        //     if(error){
+        //         console.log(error)
+        //     }
+        //     else{
+        //         console.log('File written successfully');
+        //     }
+        // })
     }
 
     catch(e){
