@@ -3,8 +3,9 @@ const mongoose = require('mongoose')
 const userSchema = new mongoose.Schema({
     name: {
          type: String,
-         required: true,
-         trim: true
+        //  required: true,
+         trim: true,
+        //  unique: true
     },
     
     certificate: {
@@ -13,6 +14,6 @@ const userSchema = new mongoose.Schema({
     }
 }, { timestamps: true })
 
-const PNG = mongoose.model('PNG', userSchema)
+const png = mongoose.model('png', userSchema)
 
-module.exports = PNG
+module.exports = png
